@@ -40,7 +40,9 @@ def collaborative_filtering(movie_title):
             return similar_movies
         else:
             st.error("Error: Movie index out of range for collaborative filtering.")
+            return []
     else:
+        st.error("Error: Movie not found.")
         return []
 
 # Function to perform content-based filtering
@@ -59,7 +61,9 @@ def content_based_filtering(movie_title):
             return similar_movies
         else:
             st.error("Error: Movie index out of range for content-based filtering.")
+            return []
     else:
+        st.error("Error: Movie not found.")
         return []
 
 # Streamlit app
