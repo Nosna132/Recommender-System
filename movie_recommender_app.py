@@ -17,8 +17,7 @@ def collaborative_filtering(movie_title):
     if movie_index:
         movie_index = movie_index[0]
         similar_movies = model[movie_index]
-        top_indices = similar_movies.argsort()[-10:][::-1]
-        return top_indices
+        return similar_movies[:10]  # Return top 10 similar movies
     else:
         st.error("Error: Movie not found.")
         return []
@@ -35,8 +34,7 @@ def content_based_filtering(movie_title):
     if movie_index:
         movie_index = movie_index[0]
         similar_movies = model[movie_index]
-        top_indices = similar_movies.argsort()[-10:][::-1]
-        return top_indices
+        return similar_movies[:10]  # Return top 10 similar movies
     else:
         st.error("Error: Movie not found.")
         return []
@@ -55,14 +53,14 @@ movie_title = st.sidebar.selectbox(
 if st.sidebar.button('Show Recommendations'):
     # Collaborative Filtering
     st.subheader("Collaborative Filtering Recommendations")
-    top_indices_collaborative = collaborative_filtering(movie_title)
-    if top_indices_collaborative:
-        recommendations_collaborative = tmdb_data.iloc[top_indices_collaborative]['title']
-        st.write(recommendations_collaborative)
-    
+    similar_movies_collaborative = collaborative_filtering(movie_title)
+    if similar_movies_collaborative:
+        for i, movie in enumerate(similar_movies_collaborative):
+            st.write(f"{i+1}. {tmdb_data.iloc[movie]['title']}")
+
     # Content-based Filtering
     st.subheader("Content-based Filtering Recommendations")
-    top_indices_content_based = content_based_filtering(movie_title)
-    if top_indices_content_based:
-        recommendations_content_based = tmdb_data.iloc[top_indices_content_based]['title']
-        st.write(recommendations_content_based)
+    similar_movies_content_based = content_based_filtering(movie_title)
+    if similar_movies_content_based:
+        for i, movie in enumerate(similar_movies_content_based):
+            st.write(f"{i+1}. {tmdb_data.iloc[movie]['title']}")
