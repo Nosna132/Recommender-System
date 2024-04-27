@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from joblib import load
@@ -20,7 +21,7 @@ def find_closest_match(user_input):
     movie_titles = tmdb_data['title'].tolist()
     
     # Find closest match using difflib's get_close_matches function
-    closest_matches = df.get_close_matches(user_input, movie_titles, n=1, cutoff=0.6)
+    closest_matches = difflib.get_close_matches(user_input, movie_titles, n=1, cutoff=0.6)
     
     if closest_matches:
         # Return the closest match
