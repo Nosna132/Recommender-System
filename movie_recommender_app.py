@@ -6,7 +6,7 @@ from joblib import load
 import difflib
 
 # Set page config to wide mode and dark theme
-st.set_page_config(layout="wide", page_title="Movie Recommender System", page_icon=":clapper:")
+st.set_page_config(layout="wide", page_title="Movie Recommender System")
 
 # Load data
 tmdb_data = pd.read_csv('tmdb_5000_movies.csv')
@@ -92,7 +92,7 @@ def content_based_filtering(movie_title):
     return top_similar_movies
 
 # Main Streamlit app
-st.title(":clapper: Movie Recommender System")
+st.title("Movie Recommender System")
 
 # Sidebar
 st.sidebar.title("Filters")
@@ -112,11 +112,18 @@ if st.button("Recommend"):
             collab_filtering_result = collaborative_filtering(closest_match)
             st.subheader("Top 10 movies similar to {} based on Collaborative Filtering:".format(closest_match))
             table_data = []
-            for i, movie in enumerate(collab_filtering_result, 1):
-                table_data.append([i, tmdb_data.iloc[movie[0]]['title'], movie[1]])
-            st.table(pd.DataFrame(table_data, columns=["Rank", "Movie", "Similarity Score"]))
+            for movie in collab_filtering_result:
+                table_data.append([tmdb_data.iloc[movie[0]]['title'], movie[1]])
+            table_df = pd.DataFrame(table_data, columns=["Movie", "Similarity Score"])
+            st.table(table_df)
 
         elif filter_choice == "Content-Based Filtering":
             content_based_filtering_result = content_based_filtering(closest_match)
             st.subheader("Top 10 movies similar to {} based on Content-Based Filtering:".format(closest_match))
-            table
+            table_data = []
+            for movie in content_based_filtering_result:
+                table_data.append([tmdb_data.iloc[movie[0]]['title'], movie[1]])
+            table_df = pd.DataFrame(table_data, columns=["Movie", "Similarity Score"])
+            st.table(table_df)
+    else:
+        st.write("There's no movie such as", movie_title, "Please enter another title")
