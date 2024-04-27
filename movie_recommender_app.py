@@ -44,13 +44,17 @@ def find_closest_match(user_input):
 def collaborative_filtering(movie_title):
     # Find index of the input movie
     movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
-    return collaborative_model[movie_index][:10]  # Return top 10 recommended movie indices
+    recommendations = collaborative_model[movie_index]
+    unique_recommendations = set(recommendations) - {movie_index}  # Remove input movie index and duplicates
+    return list(unique_recommendations)[:10]  # Return top 10 unique recommendations
 
 # Content-based Filtering
 def content_based_filtering(movie_title):
     # Find index of the input movie
     movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
-    return content_based_model[movie_index][:10]  # Return top 10 recommended movie indices
+    recommendations = content_based_model[movie_index]
+    unique_recommendations = set(recommendations) - {movie_index}  # Remove input movie index and duplicates
+    return list(unique_recommendations)[:10]  # Return top 10 unique recommendations
 
 # Title of the web app
 st.title("Movie Recommender System")
