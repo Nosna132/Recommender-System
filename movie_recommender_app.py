@@ -32,7 +32,7 @@ def collaborative_filtering(movie_title):
         st.error("Error: Collaborative filtering model not found.")
         return []
     
-    movie_index = tmdb_data.index[tmdb_data['title'] == movie_title].tolist()
+    movie_index = tmdb_data[tmdb_data['title'] == movie_title].index.tolist()
     if movie_index:
         movie_index = movie_index[0]
         if 0 <= movie_index < len(model):
@@ -51,7 +51,7 @@ def content_based_filtering(movie_title):
         st.error("Error: Content-based filtering model not found.")
         return []
     
-    movie_index = tmdb_data.index[tmdb_data['title'] == movie_title].tolist()
+    movie_index = tmdb_data[tmdb_data['title'] == movie_title].index.tolist()
     if movie_index:
         movie_index = movie_index[0]
         if 0 <= movie_index < len(model):
