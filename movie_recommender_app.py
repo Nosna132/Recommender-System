@@ -34,8 +34,12 @@ def collaborative_filtering(movie_title):
     
     movie_index = tmdb_data.index[tmdb_data['title'] == movie_title].tolist()
     if movie_index:
-        similar_movies = model[movie_index[0]]
-        return similar_movies
+        movie_index = movie_index[0]
+        if movie_index < len(model):
+            similar_movies = model[movie_index]
+            return similar_movies
+        else:
+            st.error("Error: Movie index out of range for collaborative filtering.")
     else:
         return []
 
@@ -49,8 +53,12 @@ def content_based_filtering(movie_title):
     
     movie_index = tmdb_data.index[tmdb_data['title'] == movie_title].tolist()
     if movie_index:
-        similar_movies = model[movie_index[0]]
-        return similar_movies
+        movie_index = movie_index[0]
+        if movie_index < len(model):
+            similar_movies = model[movie_index]
+            return similar_movies
+        else:
+            st.error("Error: Movie index out of range for content-based filtering.")
     else:
         return []
 
