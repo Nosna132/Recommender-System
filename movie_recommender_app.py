@@ -1,6 +1,12 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
-from joblib import dump, load
+import difflib as df
+
+# Load data
+tmdb_data = pd.read_csv('tmdb_5000_movies.csv')
 
 # Function to handle errors and variations in user input
 def find_closest_match(user_input):
@@ -19,43 +25,50 @@ def find_closest_match(user_input):
 
 # Collaborative Filtering
 def collaborative_filtering(movie_title):
-    # Compute similarity matrix
     similarity_matrix = cosine_similarity(numeric_data)
-    
-    # Find index of the input movie
     movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
-    
-    # Retrieve similar movies with their similarity scores
     similar_movies = list(enumerate(similarity_matrix[movie_index]))
-    
-    # Sort similar movies by similarity score in descending order
     sorted_similar_movies = sorted(similar_movies, key=lambda x: x[1], reverse=True)
-    
-    # Extract top similar movies excluding the input movie itself
-    top_similar_movies = sorted_similar_movies[1:11]
-    
-    # Return top similar movies
-    return top_similar_movies
+    return sorted_similar_movies[1:11]  # Return top 10 similar movies excluding itself
 
-# Example
-def recommend_movies(movie_title, filter_type):
-    closest_match = find_closest_match(movie_title)
+# Content-Based Filtering
+def content_based_filtering(movie_title):
+    cv = CountVectorizer()
+    genres_matrix = cv.fit_transform(tmdb_data['genres'])
+    similarity_scores = cosine_similarity(genres_matrix, genres_matrix)
+    movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
+    similar_movies = list(enumerate(similarity_scores[movie_index]))
+    sorted_similar_movies = sorted(similar_movies, key=lambda x: x[1], reverse=True)
+    return sorted_similar_movies[1:11]  # Return top 10 similar movies excluding itself
+
+# Streamlit app
+st.title("Movie Recommender System")
+
+# User input for movie title
+movie_title = st.text_input("Enter the title of the movie:")
+
+# User input for filtering method
+filtering_method = st.selectbox("Select Filtering Method:", ["Collaborative Filtering", "Content-Based Filtering"])
+
+# Find closest match to user input
+closest_match = find_closest_match(movie_title)
+
+# Check if a close match is found
+if closest_match:
+    st.write("Closest match found:", closest_match)
     
-    if closest_match:
-        print("Closest match found:", closest_match)
-        if filter_type == "collaborative":
-            model = collaborative_filtering(closest_match)
-        elif filter_type == "content-based":
-            model = content_based_filtering(closest_match)
-        
-        # Save the model
-        dump(model, 'movie_recommender_model.joblib')
-        print("Model saved successfully as 'movie_recommender_model.joblib'")
-    else:
-        print("There's no movie such as", movie_title, "Please enter another title")
-
-# Example usage
-movie_title = input("Enter the title of the movie: ")
-filter_type = input("Enter the type of filtering (collaborative/content-based): ")
-
-recommend_movies(movie_title, filter_type)
+    # Perform recommendation based on selected filtering method
+    if filtering_method == "Collaborative Filtering":
+        collab_filtering_result = collaborative_filtering(closest_match)
+        st.write("\nTop 10 movies similar to", closest_match, "based on Collaborative Filtering:")
+        for movie in collab_filtering_result:
+            st.write("- Movie:", tmdb_data.iloc[movie[0]]['title'])
+            st.write("  Similarity Score:", movie[1])
+    elif filtering_method == "Content-Based Filtering":
+        content_based_filtering_result = content_based_filtering(closest_match)
+        st.write("\nTop 10 movies similar to", closest_match, "based on Content-Based Filtering:")
+        for movie in content_based_filtering_result:
+            st.write("- Movie:", tmdb_data.iloc[movie[0]]['title'])
+            st.write("  Similarity Score:", movie[1])
+else:
+    st.write("No close match found for:", movie_title)
