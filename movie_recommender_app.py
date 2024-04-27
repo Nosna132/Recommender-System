@@ -30,7 +30,9 @@ def collaborative_filtering(movie_title):
     print("Collaborative Filtering - Movie Index:", movie_index)
     if movie_index:
         similar_movies = model[movie_index[0]]
-        return similar_movies
+        # Convert similar_movies to a list of tuples (movie_id, similarity_score)
+        similar_movies_tuples = [(movie_id, similarity_score) for movie_id, similarity_score in enumerate(similar_movies)]
+        return similar_movies_tuples
     else:
         return []
 
@@ -41,7 +43,9 @@ def content_based_filtering(movie_title):
     print("Content-Based Filtering - Movie Index:", movie_index)
     if movie_index:
         similar_movies = model[movie_index[0]]
-        return similar_movies
+        # Convert similar_movies to a list of tuples (movie_id, similarity_score)
+        similar_movies_tuples = [(movie_id, similarity_score) for movie_id, similarity_score in enumerate(similar_movies)]
+        return similar_movies_tuples
     else:
         return []
 
@@ -66,7 +70,7 @@ if closest_match:
         collab_filtering_result = collaborative_filtering(closest_match)
         if collab_filtering_result:
             st.write("\nTop 10 movies similar to", closest_match, "based on Collaborative Filtering:")
-            for movie_id, similarity_score in collab_filtering_result:
+            for movie_id, similarity_score in collab_filtering_result[:10]:  # Only iterate over the first 10 results
                 st.write("- Movie:", tmdb_data.iloc[movie_id]['title'])
                 st.write("  Similarity Score:", similarity_score)
         else:
@@ -75,7 +79,7 @@ if closest_match:
         content_based_filtering_result = content_based_filtering(closest_match)
         if content_based_filtering_result:
             st.write("\nTop 10 movies similar to", closest_match, "based on Content-Based Filtering:")
-            for movie_id, similarity_score in content_based_filtering_result:
+            for movie_id, similarity_score in content_based_filtering_result[:10]:  # Only iterate over the first 10 results
                 st.write("- Movie:", tmdb_data.iloc[movie_id]['title'])
                 st.write("  Similarity Score:", similarity_score)
         else:
