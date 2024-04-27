@@ -27,6 +27,7 @@ def find_closest_match(user_input):
 def collaborative_filtering(movie_title):
     model = load('movie_recommender_model_collaborative.joblib')
     movie_index = tmdb_data.index[tmdb_data['title'] == movie_title].tolist()
+    print("Collaborative Filtering - Movie Title:", movie_title)
     print("Collaborative Filtering - Movie Index:", movie_index)
     if movie_index:
         similar_movies = model[movie_index[0]]
@@ -38,6 +39,7 @@ def collaborative_filtering(movie_title):
 def content_based_filtering(movie_title):
     model = load('movie_recommender_model_content-based.joblib')
     movie_index = tmdb_data.index[tmdb_data['title'] == movie_title].tolist()
+    print("Content-Based Filtering - Movie Title:", movie_title)
     print("Content-Based Filtering - Movie Index:", movie_index)
     if movie_index:
         similar_movies = model[movie_index[0]]
