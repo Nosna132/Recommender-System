@@ -3,7 +3,7 @@ import pandas as pd
 from joblib import load
 
 # Load the TMDB dataset
-tmdb_data = pd.read_csv('tmdb_data.csv')
+tmdb_data = pd.read_csv('tmdb_5000_movies.csv')
 
 # Function to perform collaborative filtering
 def collaborative_filtering(movie_title):
