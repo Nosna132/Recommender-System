@@ -34,18 +34,22 @@ def find_closest_match(user_input):
     closest_matches = difflib.get_close_matches(user_input, movie_titles, n=1, cutoff=0.6)
     
     if closest_matches:
-        # Return the index of the closest match
-        return movie_titles.index(closest_matches[0])
+        # Return the closest match
+        return closest_matches[0]
     else:
         # Return None if no close match found
         return None
 
 # Collaborative Filtering
-def collaborative_filtering(movie_index):
+def collaborative_filtering(movie_title):
+    # Find index of the input movie
+    movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
     return collaborative_model[movie_index]
 
 # Content-based Filtering
-def content_based_filtering(movie_index):
+def content_based_filtering(movie_title):
+    # Find index of the input movie
+    movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
     return content_based_model[movie_index]
 
 # Title of the web app
@@ -56,16 +60,16 @@ movie_title = st.sidebar.selectbox("Select a Movie:", tmdb_data['title'])
 
 # Recommend button
 if st.sidebar.button("Recommend"):
-    closest_match_index = find_closest_match(movie_title)
-    if closest_match_index is not None:
+    closest_match = find_closest_match(movie_title)
+    if closest_match is not None:
         st.subheader("Collaborative Filtering Recommendations")
-        collaborative_recommendations = collaborative_filtering(closest_match_index)
-        for i, movie_idx in enumerate(collaborative_recommendations):
-            st.write(f"{i+1}. {tmdb_data.iloc[movie_idx]['title']}")
+        collaborative_recommendations = collaborative_filtering(closest_match)
+        for i, movie_title in enumerate(collaborative_recommendations):
+            st.write(f"{i+1}. {movie_title}")
 
         st.subheader("Content-based Filtering Recommendations")
-        content_based_recommendations = content_based_filtering(closest_match_index)
-        for i, movie_idx in enumerate(content_based_recommendations):
-            st.write(f"{i+1}. {tmdb_data.iloc[movie_idx]['title']}")
+        content_based_recommendations = content_based_filtering(closest_match)
+        for i, movie_title in enumerate(content_based_recommendations):
+            st.write(f"{i+1}. {movie_title}")
     else:
         st.error("No close match found for the selected movie. Please try another movie title.")
