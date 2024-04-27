@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
+from joblib import load
 import difflib
 
 # Set page config to wide mode and dark theme
@@ -10,6 +11,12 @@ st.set_page_config(layout="wide", page_title="Movie Recommender System", page_ic
 
 # Load data
 tmdb_data = pd.read_csv('tmdb_5000_movies.csv')
+
+# Load collaborative filtering model
+collab_model = load("movie_recommender_model_collaborative.joblib")
+
+# Load content-based filtering model
+content_based_model = load("movie_recommender_model_content-based.joblib")
 
 # Function to handle errors and variations in user input
 def find_closest_match(user_input):
@@ -59,12 +66,38 @@ def collaborative_filtering(movie_title):
     # Return top similar movies
     return top_similar_movies
 
+# Content-Based Filtering
+def content_based_filtering(movie_title):
+    # Initialize CountVectorizer
+    cv = CountVectorizer()
+    
+    # Fit and transform genres into a matrix
+    genres_matrix = cv.fit_transform(tmdb_data['genres'])
+    
+    # Compute cosine similarity between movies based on genres
+    similarity_scores = cosine_similarity(genres_matrix, genres_matrix)
+    
+    # Find index of the input movie
+    movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
+    
+    # Retrieve similar movies with their similarity scores
+    similar_movies = list(enumerate(similarity_scores[movie_index]))
+    
+    # Sort similar movies by similarity score in descending order
+    sorted_similar_movies = sorted(similar_movies, key=lambda x: x[1], reverse=True)
+    
+    # Extract top similar movies excluding the input movie itself
+    top_similar_movies = sorted_similar_movies[1:11]
+    
+    # Return top similar movies
+    return top_similar_movies
+
 # Main Streamlit app
 st.title("Movie Recommender System")
 
 # Sidebar
 st.sidebar.title("Filters")
-filter_choice = st.sidebar.radio("Select Filter", ("Collaborative Filtering",))
+filter_choice = st.sidebar.radio("Select Filter", ("Collaborative Filtering", "Content-Based Filtering"))
 
 # Input for movie title
 movie_title = st.text_input("Enter the title of the movie:", "")
@@ -81,6 +114,14 @@ if st.button("Recommend"):
             st.subheader("Top 10 movies similar to {} based on Collaborative Filtering:".format(closest_match))
             table_data = []
             for movie in collab_filtering_result:
+                table_data.append([tmdb_data.iloc[movie[0]]['title'], movie[1]])
+            st.table(pd.DataFrame(table_data, columns=["Movie", "Similarity Score"]))
+
+        elif filter_choice == "Content-Based Filtering":
+            content_based_filtering_result = content_based_filtering(closest_match)
+            st.subheader("Top 10 movies similar to {} based on Content-Based Filtering:".format(closest_match))
+            table_data = []
+            for movie in content_based_filtering_result:
                 table_data.append([tmdb_data.iloc[movie[0]]['title'], movie[1]])
             st.table(pd.DataFrame(table_data, columns=["Movie", "Similarity Score"]))
     else:
