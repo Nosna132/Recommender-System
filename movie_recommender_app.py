@@ -42,17 +42,17 @@ def collaborative_filtering(movie_title):
     m = tmdb_data['vote_count'].quantile(0.90)
 
     # Filter out qualified movies
-    q_movies = tmdb_data.copy().loc[tmdb_data['vote_count'] >= m]
+    q_movies = tmdb_data.loc[tmdb_data['vote_count'] >= m].copy()
 
     # Define numeric columns for collaborative filtering
     numeric_columns = ['budget', 'popularity', 'vote_average', 'vote_count']
-    numeric_data = tmdb_data[numeric_columns].fillna(0)  # Fill missing values with 0
+    numeric_data = q_movies[numeric_columns].fillna(0)  # Fill missing values with 0
     
     # Compute similarity matrix
     similarity_matrix = cosine_similarity(numeric_data)
     
     # Find index of the input movie
-    movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
+    movie_index = q_movies[q_movies['title'] == movie_title].index[0]
     
     # Retrieve similar movies with their similarity scores
     similar_movies = list(enumerate(similarity_matrix[movie_index]))
@@ -66,31 +66,12 @@ def collaborative_filtering(movie_title):
     # Return top similar movies
     return top_similar_movies
 
-# Content-Based Filtering
-def content_based_filtering(movie_title):
-    # Initialize CountVectorizer
-    cv = CountVectorizer()
-    
-    # Fit and transform genres into a matrix
-    genres_matrix = cv.fit_transform(tmdb_data['genres'])
-    
-    # Compute cosine similarity between movies based on genres
-    similarity_scores = cosine_similarity(genres_matrix, genres_matrix)
-    
-    # Find index of the input movie
-    movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
-    
-    # Retrieve similar movies with their similarity scores
-    similar_movies = list(enumerate(similarity_scores[movie_index]))
-    
-    # Sort similar movies by similarity score in descending order
-    sorted_similar_movies = sorted(similar_movies, key=lambda x: x[1], reverse=True)
-    
-    # Extract top similar movies excluding the input movie itself
-    top_similar_movies = sorted_similar_movies[1:11]
-    
-    # Return top similar movies
-    return top_similar_movies
+# Display function for Collaborative Filtering
+def display_collab_filtering_results(collab_filtering_result, movie_title):
+    st.subheader("Top 10 movies similar to {} based on Collaborative Filtering:".format(movie_title))
+    for i, movie in enumerate(collab_filtering_result):
+        st.write("- Movie:", tmdb_data.iloc[movie[0]]['title'])
+        st.write("  Similarity Score:", round(movie[1], 4))  # Rounding similarity score to 4 decimal places
 
 # Main Streamlit app
 st.title("Movie Recommender System")
@@ -111,18 +92,10 @@ if st.button("Recommend"):
         
         if filter_choice == "Collaborative Filtering":
             collab_filtering_result = collaborative_filtering(closest_match)
-            st.subheader("Top 10 movies similar to {} based on Collaborative Filtering:".format(closest_match))
-            table_data = []
-            for movie in collab_filtering_result:
-                table_data.append([tmdb_data.iloc[movie[0]]['title'], round(movie[1], 4)])  # Rounding similarity score to 4 decimal places
-            st.table(pd.DataFrame(table_data, columns=["Movie", "Similarity Score"]))
+            display_collab_filtering_results(collab_filtering_result, closest_match)
 
         elif filter_choice == "Content-Based Filtering":
             content_based_filtering_result = content_based_filtering(closest_match)
-            st.subheader("Top 10 movies similar to {} based on Content-Based Filtering:".format(closest_match))
-            table_data = []
-            for movie in content_based_filtering_result:
-                table_data.append([tmdb_data.iloc[movie[0]]['title'], round(movie[1], 4)])  # Rounding similarity score to 4 decimal places
-            st.table(pd.DataFrame(table_data, columns=["Movie", "Similarity Score"]))
+            display_content_based_filtering_results(content_based_filtering_result, closest_match)
     else:
         st.write("There's no movie such as", movie_title, "Please enter another title")
