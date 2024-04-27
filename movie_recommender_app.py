@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 # Load the data
 @st.cache
@@ -10,6 +10,13 @@ def load_data():
     return pd.read_csv("tmdb_5000_movies.csv")
 
 tmdb_data = load_data()
+
+# Generate TF-IDF matrix
+tfidf = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf.fit_transform(tmdb_data['overview'])
+
+# Get the indices of the DataFrame
+indices = pd.Series(tmdb_data.index, index=tmdb_data['title']).drop_duplicates()
 
 # Collaborative Filtering
 def collaborative_filtering(movie_title, top_n=10):
