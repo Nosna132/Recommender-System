@@ -6,7 +6,7 @@ from joblib import load
 import difflib
 
 # Set page config to wide mode and dark theme
-st.set_page_config(layout="wide", page_title="Movie Recommender System", page_icon=":clapper:")
+st.set_page_config(layout="wide", page_title="Movie Recommender System", page_icon="🎬")
 
 # Load data
 tmdb_data = pd.read_csv('tmdb_5000_movies.csv')
@@ -111,19 +111,17 @@ if st.button("Recommend"):
         if filter_choice == "Collaborative Filtering":
             collab_filtering_result = collaborative_filtering(closest_match)
             st.subheader("Top 10 movies similar to {} based on Collaborative Filtering:".format(closest_match))
-            result_rows = []
+            table_data = []
             for movie in collab_filtering_result:
-                result_rows.append({"Movie": tmdb_data.iloc[movie[0]]['title'], "Similarity Score": movie[1]})
-            result_df = pd.DataFrame(result_rows)
-            st.table(result_df)
+                table_data.append([tmdb_data.iloc[movie[0]]['title'], movie[1]])
+            st.table(pd.DataFrame(table_data, columns=["Movie", "Similarity Score"]))
 
         elif filter_choice == "Content-Based Filtering":
             content_based_filtering_result = content_based_filtering(closest_match)
             st.subheader("Top 10 movies similar to {} based on Content-Based Filtering:".format(closest_match))
-            result_rows = []
+            table_data = []
             for movie in content_based_filtering_result:
-                result_rows.append({"Movie": tmdb_data.iloc[movie[0]]['title'], "Similarity Score": movie[1]})
-            result_df = pd.DataFrame(result_rows)
-            st.table(result_df)
+                table_data.append([tmdb_data.iloc[movie[0]]['title'], movie[1]])
+            st.table(pd.DataFrame(table_data, columns=["Movie", "Similarity Score"]))
     else:
         st.write("There's no movie such as", movie_title, "Please enter another title")
