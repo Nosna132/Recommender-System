@@ -59,14 +59,14 @@ if st.button("Recommend"):
         if filtering_method == "Collaborative Filtering":
             collab_filtering_result = collaborative_filtering(closest_match)
             st.write("\nTop 10 movies similar to", closest_match, "based on Collaborative Filtering:")
-            for movie in collab_filtering_result:
-                st.write("- Movie:", tmdb_data.iloc[movie[0]]['title'])
-                st.write("  Similarity Score:", movie[1])
+            for movie_id, similarity_score in collab_filtering_result:
+                st.write("- Movie:", tmdb_data.iloc[movie_id]['title'])
+                st.write("  Similarity Score:", similarity_score)
         elif filtering_method == "Content-Based Filtering":
             content_based_filtering_result = content_based_filtering(closest_match)
             st.write("\nTop 10 movies similar to", closest_match, "based on Content-Based Filtering:")
-            for movie in content_based_filtering_result:
-                st.write("- Movie:", tmdb_data.iloc[movie[0]]['title'])
-                st.write("  Similarity Score:", movie[1])
+            for movie_id, similarity_score in content_based_filtering_result:
+                st.write("- Movie:", tmdb_data.iloc[movie_id]['title'])
+                st.write("  Similarity Score:", similarity_score)
     else:
         st.write("No close match found for:", movie_title)
