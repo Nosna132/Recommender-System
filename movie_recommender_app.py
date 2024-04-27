@@ -31,6 +31,19 @@ def find_closest_match(user_input):
 
 # Collaborative Filtering
 def collaborative_filtering(movie_title):
+    # Calculate mean rating across all movies
+    C = tmdb_data['vote_average'].mean()
+
+    # Calculate the minimum number of votes required to be in the top percentile
+    m = tmdb_data['vote_count'].quantile(0.90)
+
+    # Filter out qualified movies
+    q_movies = tmdb_data.copy().loc[tmdb_data['vote_count'] >= m]
+
+    # Define numeric columns for collaborative filtering
+    numeric_columns = ['budget', 'popularity', 'vote_average', 'vote_count']
+    numeric_data = q_movies[numeric_columns].fillna(0)  # Fill missing values with 0
+    
     # Compute similarity matrix
     similarity_matrix = cosine_similarity(numeric_data)
     
