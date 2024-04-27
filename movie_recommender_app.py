@@ -65,11 +65,11 @@ if st.sidebar.button("Recommend"):
         st.subheader("Collaborative Filtering Recommendations")
         collaborative_recommendations = collaborative_filtering(closest_match)
         for i, movie_idx in enumerate(collaborative_recommendations):
-            st.write(f"{i+1}. {tmdb_data.iloc[movie_idx]['title']}")
+            st.write(f"{i+1}. {tmdb_data.iloc[int(movie_idx)]['title']}")
 
         st.subheader("Content-based Filtering Recommendations")
         content_based_recommendations = content_based_filtering(closest_match)
         for i, movie_idx in enumerate(content_based_recommendations):
-            st.write(f"{i+1}. {tmdb_data.iloc[movie_idx]['title']}")
+            st.write(f"{i+1}. {tmdb_data.iloc[int(movie_idx)]['title']}")
     else:
         st.error("No close match found for the selected movie. Please try another movie title.")
