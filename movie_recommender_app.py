@@ -6,7 +6,7 @@ from joblib import load
 import difflib
 
 # Set page config to wide mode and dark theme
-st.set_page_config(layout="wide", page_title="Movie Recommender System", page_icon="🎬")
+st.set_page_config(layout="wide", page_title="Movie Recommender System", page_icon=":clapper:")
 
 # Load data
 tmdb_data = pd.read_csv('tmdb_5000_movies.csv')
@@ -92,7 +92,7 @@ def content_based_filtering(movie_title):
     return top_similar_movies
 
 # Main Streamlit app
-st.title("Movie Recommender System")
+st.title(":clapper: Movie Recommender System")
 
 # Sidebar
 st.sidebar.title("Filters")
@@ -111,17 +111,12 @@ if st.button("Recommend"):
         if filter_choice == "Collaborative Filtering":
             collab_filtering_result = collaborative_filtering(closest_match)
             st.subheader("Top 10 movies similar to {} based on Collaborative Filtering:".format(closest_match))
-            collab_results_df = pd.DataFrame(columns=["Movie", "Similarity Score"])
-            for movie in collab_filtering_result:
-                collab_results_df = pd.concat([collab_results_df, pd.DataFrame({"Movie": [tmdb_data.iloc[movie[0]]['title']], "Similarity Score": [movie[1]]})], ignore_index=True)
-            st.table(collab_results_df)
+            table_data = []
+            for i, movie in enumerate(collab_filtering_result, 1):
+                table_data.append([i, tmdb_data.iloc[movie[0]]['title'], movie[1]])
+            st.table(pd.DataFrame(table_data, columns=["Rank", "Movie", "Similarity Score"]))
 
         elif filter_choice == "Content-Based Filtering":
             content_based_filtering_result = content_based_filtering(closest_match)
             st.subheader("Top 10 movies similar to {} based on Content-Based Filtering:".format(closest_match))
-            content_results_df = pd.DataFrame(columns=["Movie", "Similarity Score"])
-            for movie in content_based_filtering_result:
-                content_results_df = pd.concat([content_results_df, pd.DataFrame({"Movie": [tmdb_data.iloc[movie[0]]['title']], "Similarity Score": [movie[1]]})], ignore_index=True)
-            st.table(content_results_df)
-    else:
-        st.write("There's no movie such as", movie_title, "Please enter another title")
+            table
