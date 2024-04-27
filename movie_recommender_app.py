@@ -6,7 +6,7 @@ from joblib import load
 import difflib
 
 # Set page config to wide mode and dark theme
-st.set_page_config(layout="wide", page_title="Movie Recommender System", page_icon="🎬", theme="dark")
+st.set_page_config(layout="wide", page_title="Movie Recommender System")
 
 # Load data
 tmdb_data = pd.read_csv('tmdb_5000_movies.csv')
