@@ -11,18 +11,19 @@ except pd.errors.EmptyDataError:
 
 # Function to handle errors and variations in user input
 def find_closest_match(user_input):
-    # List of movie titles from the dataset
-    movie_titles = tmdb_data['title'].tolist()
+    if not tmdb_data.empty:
+        # List of movie titles from the dataset
+        movie_titles = tmdb_data['title'].tolist()
+        
+        # Find closest match using difflib's get_close_matches function
+        closest_matches = df.get_close_matches(user_input, movie_titles, n=1, cutoff=0.6)
+        
+        if closest_matches:
+            # Return the closest match
+            return closest_matches[0]
     
-    # Find closest match using difflib's get_close_matches function
-    closest_matches = df.get_close_matches(user_input, movie_titles, n=1, cutoff=0.6)
-    
-    if closest_matches:
-        # Return the closest match
-        return closest_matches[0]
-    else:
-        # Return None if no close match found
-        return None
+    # Return None if no close match found or dataset is empty
+    return None
 
 # Function to perform collaborative filtering
 def collaborative_filtering(movie_title):
@@ -32,12 +33,14 @@ def collaborative_filtering(movie_title):
         st.error("Error: Collaborative filtering model not found.")
         return []
     
-    movie_index = tmdb_data.index[tmdb_data['title'] == movie_title].tolist()
+    movie_index = tmdb_data[tmdb_data['title'] == movie_title].index.tolist()
     if movie_index:
-        similar_movies = model[movie_index[0]]
-        return similar_movies
-    else:
-        return []
+        # Ensure movie index is within valid range
+        if 0 <= movie_index[0] < len(model):
+            similar_movies = model[movie_index[0]]
+            return similar_movies
+    
+    return []
 
 # Function to perform content-based filtering
 def content_based_filtering(movie_title):
@@ -47,12 +50,14 @@ def content_based_filtering(movie_title):
         st.error("Error: Content-based filtering model not found.")
         return []
     
-    movie_index = tmdb_data.index[tmdb_data['title'] == movie_title].tolist()
+    movie_index = tmdb_data[tmdb_data['title'] == movie_title].index.tolist()
     if movie_index:
-        similar_movies = model[movie_index[0]]
-        return similar_movies
-    else:
-        return []
+        # Ensure movie index is within valid range
+        if 0 <= movie_index[0] < len(model):
+            similar_movies = model[movie_index[0]]
+            return similar_movies
+    
+    return []
 
 # Streamlit app
 st.title("Movie Recommender System")
@@ -81,7 +86,7 @@ if st.button("Recommend"):
                     st.write("- Movie:", tmdb_data.iloc[movie_id]['title'])
                     st.write("  Similarity Score:", similarity_score)
             else:
-                st.error("Error: Unable to perform collaborative filtering.")
+                st.warning("Warning: Unable to perform collaborative filtering.")
         elif filtering_method == "Content-Based Filtering":
             content_based_filtering_result = content_based_filtering(closest_match)
             if content_based_filtering_result:
@@ -90,6 +95,6 @@ if st.button("Recommend"):
                     st.write("- Movie:", tmdb_data.iloc[movie_id]['title'])
                     st.write("  Similarity Score:", similarity_score)
             else:
-                st.error("Error: Unable to perform content-based filtering.")
+                st.warning("Warning: Unable to perform content-based filtering.")
     else:
         st.error("Error: No close match found for:", movie_title)
