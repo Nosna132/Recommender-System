@@ -14,17 +14,11 @@ def collaborative_filtering(movie_title):
         return []
     
     movie_index = tmdb_data[tmdb_data['title'] == movie_title].index.tolist()
-    print("Movie index from dataset:", movie_index)
     if movie_index:
         movie_index = movie_index[0]
-        print("Selected movie index:", movie_index)
-        print("Length of collaborative filtering model:", len(model))
-        if 0 <= movie_index < len(model):
-            similar_movies = model[movie_index]
-            return similar_movies
-        else:
-            st.error("Error: Movie index out of range for collaborative filtering. Movie index:", movie_index)
-            return []
+        similar_movies = model[movie_index]
+        top_indices = similar_movies.argsort()[-10:][::-1]
+        return top_indices
     else:
         st.error("Error: Movie not found.")
         return []
@@ -38,17 +32,11 @@ def content_based_filtering(movie_title):
         return []
     
     movie_index = tmdb_data[tmdb_data['title'] == movie_title].index.tolist()
-    print("Movie index from dataset:", movie_index)
     if movie_index:
         movie_index = movie_index[0]
-        print("Selected movie index:", movie_index)
-        print("Length of content-based filtering model:", len(model))
-        if 0 <= movie_index < len(model):
-            similar_movies = model[movie_index]
-            return similar_movies
-        else:
-            st.error("Error: Movie index out of range for content-based filtering. Movie index:", movie_index)
-            return []
+        similar_movies = model[movie_index]
+        top_indices = similar_movies.argsort()[-10:][::-1]
+        return top_indices
     else:
         st.error("Error: Movie not found.")
         return []
@@ -67,12 +55,14 @@ movie_title = st.sidebar.selectbox(
 if st.sidebar.button('Show Recommendations'):
     # Collaborative Filtering
     st.subheader("Collaborative Filtering Recommendations")
-    similar_movies_collaborative = collaborative_filtering(movie_title)
-    if similar_movies_collaborative:
-        st.write(similar_movies_collaborative)
+    top_indices_collaborative = collaborative_filtering(movie_title)
+    if top_indices_collaborative:
+        recommendations_collaborative = tmdb_data.iloc[top_indices_collaborative]['title']
+        st.write(recommendations_collaborative)
     
     # Content-based Filtering
     st.subheader("Content-based Filtering Recommendations")
-    similar_movies_content_based = content_based_filtering(movie_title)
-    if similar_movies_content_based:
-        st.write(similar_movies_content_based)
+    top_indices_content_based = content_based_filtering(movie_title)
+    if top_indices_content_based:
+        recommendations_content_based = tmdb_data.iloc[top_indices_content_based]['title']
+        st.write(recommendations_content_based)
