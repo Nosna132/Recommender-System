@@ -1,10 +1,12 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from joblib import load
 import difflib
+
+# Set page config to wide mode and dark theme
+st.set_page_config(layout="wide", page_title="Movie Recommender System", page_icon="🎬", theme="dark")
 
 # Load data
 tmdb_data = pd.read_csv('tmdb_5000_movies.csv')
@@ -47,11 +49,7 @@ def collaborative_filtering(movie_title):
     
     # Compute similarity matrix
     similarity_matrix = cosine_similarity(numeric_data)
-
-    # Ensure the similarity matrix size matches the number of movies
-    if len(similarity_matrix) != len(numeric_data):
-        similarity_matrix = cosine_similarity(numeric_data, numeric_data)
-
+    
     # Find index of the input movie
     movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
     
@@ -97,10 +95,11 @@ def content_based_filtering(movie_title):
 st.title("Movie Recommender System")
 
 # Sidebar
+st.sidebar.title("Filters")
 filter_choice = st.sidebar.radio("Select Filter", ("Collaborative Filtering", "Content-Based Filtering"))
 
 # Input for movie title
-movie_title = st.text_input("Enter the title of the movie:")
+movie_title = st.text_input("Enter the title of the movie:", "")
 
 # Button to trigger recommendation
 if st.button("Recommend"):
@@ -111,14 +110,14 @@ if st.button("Recommend"):
         
         if filter_choice == "Collaborative Filtering":
             collab_filtering_result = collaborative_filtering(closest_match)
-            st.write("Top 10 movies similar to", closest_match, "based on Collaborative Filtering:")
+            st.subheader("Top 10 movies similar to {} based on Collaborative Filtering:".format(closest_match))
             for movie in collab_filtering_result:
                 st.write("- Movie:", tmdb_data.iloc[movie[0]]['title'])
                 st.write("  Similarity Score:", movie[1])
 
         elif filter_choice == "Content-Based Filtering":
             content_based_filtering_result = content_based_filtering(closest_match)
-            st.write("Top 10 movies similar to", closest_match, "based on Content-Based Filtering:")
+            st.subheader("Top 10 movies similar to {} based on Content-Based Filtering:".format(closest_match))
             for movie in content_based_filtering_result:
                 st.write("- Movie:", tmdb_data.iloc[movie[0]]['title'])
                 st.write("  Similarity Score:", movie[1])
