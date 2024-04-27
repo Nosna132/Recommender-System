@@ -3,7 +3,7 @@ import pandas as pd
 from joblib import load
 
 # Load the TMDB dataset
-tmdb_data = pd.read_csv('tmdb_5000_movies.csv')
+tmdb_data = pd.read_csv('tmdb_data.csv')
 
 # Function to perform collaborative filtering
 def collaborative_filtering(movie_title):
@@ -23,7 +23,7 @@ def collaborative_filtering(movie_title):
             similar_movies = model[movie_index]
             return similar_movies
         else:
-            st.error("Error: Movie index out of range for collaborative filtering.")
+            st.error("Error: Movie index out of range for collaborative filtering. Movie index:", movie_index)
             return []
     else:
         st.error("Error: Movie not found.")
@@ -47,7 +47,7 @@ def content_based_filtering(movie_title):
             similar_movies = model[movie_index]
             return similar_movies
         else:
-            st.error("Error: Movie index out of range for content-based filtering.")
+            st.error("Error: Movie index out of range for content-based filtering. Movie index:", movie_index)
             return []
     else:
         st.error("Error: Movie not found.")
