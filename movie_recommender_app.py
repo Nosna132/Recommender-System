@@ -44,13 +44,13 @@ def find_closest_match(user_input):
 def collaborative_filtering(movie_title):
     # Find index of the input movie
     movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
-    return collaborative_model[movie_index]
+    return collaborative_model[movie_index][:10]  # Return top 10 recommended movie indices
 
 # Content-based Filtering
 def content_based_filtering(movie_title):
     # Find index of the input movie
     movie_index = tmdb_data[tmdb_data['title'] == movie_title].index[0]
-    return content_based_model[movie_index]
+    return content_based_model[movie_index][:10]  # Return top 10 recommended movie indices
 
 # Title of the web app
 st.title("Movie Recommender System")
@@ -64,12 +64,12 @@ if st.sidebar.button("Recommend"):
     if closest_match is not None:
         st.subheader("Collaborative Filtering Recommendations")
         collaborative_recommendations = collaborative_filtering(closest_match)
-        for i, movie_title in enumerate(collaborative_recommendations):
-            st.write(f"{i+1}. {movie_title}")
+        for i, movie_idx in enumerate(collaborative_recommendations):
+            st.write(f"{i+1}. {tmdb_data.iloc[movie_idx]['title']}")
 
         st.subheader("Content-based Filtering Recommendations")
         content_based_recommendations = content_based_filtering(closest_match)
-        for i, movie_title in enumerate(content_based_recommendations):
-            st.write(f"{i+1}. {movie_title}")
+        for i, movie_idx in enumerate(content_based_recommendations):
+            st.write(f"{i+1}. {tmdb_data.iloc[movie_idx]['title']}")
     else:
         st.error("No close match found for the selected movie. Please try another movie title.")
