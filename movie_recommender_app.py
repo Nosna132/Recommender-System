@@ -112,16 +112,13 @@ if st.button("Recommend"):
         if filter_choice == "Collaborative Filtering":
             collab_filtering_result = collaborative_filtering(closest_match)
             st.subheader("Top 10 movies similar to {} based on Collaborative Filtering:".format(closest_match))
-            table_data = [(tmdb_data.iloc[movie[0]]['title'], round(movie[1], 4)) for movie in collab_filtering_result]
-            df = pd.DataFrame(table_data, columns=["Movie", "Similarity Score"])
-            st.table(df)
-            
+            for i, movie in enumerate(collab_filtering_result, start=1):
+                st.write(f"{i}. {tmdb_data.iloc[movie[0]]['title']} - Similarity Score: {movie[1]}")
 
         elif filter_choice == "Content-Based Filtering":
             content_based_filtering_result = content_based_filtering(closest_match)
             st.subheader("Top 10 movies similar to {} based on Content-Based Filtering:".format(closest_match))
-            table_data = [(tmdb_data.iloc[movie[0]]['title'], round(movie[1], 4)) for movie in content_based_filtering_result]
-            df = pd.DataFrame(table_data, columns=["Movie", "Similarity Score"])
-            st.table(df)
+            for i, movie in enumerate(content_based_filtering_result, start=1):
+                st.write(f"{i}. {tmdb_data.iloc[movie[0]]['title']} - Similarity Score: {movie[1]}")
     else:
         st.write("There's no movie such as", movie_title, "Please enter another title")
