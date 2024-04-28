@@ -24,14 +24,9 @@ def find_closest_match(user_input):
     movie_titles = tmdb_data['title'].tolist()
     
     # Find closest match using difflib's get_close_matches function
-    closest_matches = difflib.get_close_matches(user_input, movie_titles, n=1, cutoff=0.6)
+    closest_matches = difflib.get_close_matches(user_input, movie_titles, n=5, cutoff=0.6)
     
-    if closest_matches:
-        # Return the closest match
-        return closest_matches[0]
-    else:
-        # Return None if no close match found
-        return None
+    return closest_matches
 
 # Collaborative Filtering
 def collaborative_filtering(movie_title):
@@ -99,15 +94,16 @@ st.title("Movie Recommender System")
 st.sidebar.title("Filters")
 filter_choice = st.sidebar.radio("Select Filter", ("Collaborative Filtering", "Content-Based Filtering"))
 
-# Input for movie title
-movie_title = st.text_input("Enter the title of the movie:", "")
+# Dropdown for selecting movie title
+movie_title = st.sidebar.selectbox("Select Movie Title", tmdb_data['title'].tolist())
 
 # Button to trigger recommendation
 if st.button("Recommend"):
-    closest_match = find_closest_match(movie_title)
+    closest_matches = find_closest_match(movie_title)
 
-    if closest_match:
-        st.write("Closest match found:", closest_match)
+    if closest_matches:
+        st.write("Closest matches found:", closest_matches)
+        closest_match = closest_matches[0]  # Select the first closest match
         
         if filter_choice == "Collaborative Filtering":
             collab_filtering_result = collaborative_filtering(closest_match)
