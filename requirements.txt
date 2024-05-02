@@ -3,7 +3,4 @@ joblib
 numpy
 pandas
 scikit-learn
-matplotlib
-seaborn
-scipy
-nltk
+difflib
